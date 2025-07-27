@@ -1,0 +1,40 @@
+name: Expo Deploy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
+
+      - name: Publish to Expo
+        run: |
+          expo login -u ${{ secrets.EXPO_USERNAME }} -p ${{ secrets.EXPO_PASSWORD }}
+          expo publish --non-interactive
+
+      # 可選：如果你想自動 EAS Build，可以加這步
+      # - name: EAS Build (optional)
+      #   run: eas build --platform all --non-interactive --profile production
+      #   env:
+      #     EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
